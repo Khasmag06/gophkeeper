@@ -15,7 +15,7 @@ type authService interface {
 
 type recordService interface {
 	AddRecord(ctx context.Context, userID int, record any) error
-	GetAllRecords(ctx context.Context, userID int, recordType any) (any, error)
+	GetAllRecords(ctx context.Context, userID int, recordType any) (string, error)
 }
 
 type logger interface {

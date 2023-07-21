@@ -21,19 +21,19 @@ func (s *service) AddRecord(ctx context.Context, userID int, record any) error {
 	return s.repo.AddRecord(ctx, userID, record)
 }
 
-func (s *service) GetAllRecords(ctx context.Context, userID int, recordType any) (any, error) {
+func (s *service) GetAllRecords(ctx context.Context, userID int, recordType any) (string, error) {
 	records, err := s.repo.GetAllRecords(ctx, userID, recordType)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	recordBytes, err := json.Marshal(records)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	encryptedRecord, err := s.decoder.Encrypt(recordBytes)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	return encryptedRecord, nil
