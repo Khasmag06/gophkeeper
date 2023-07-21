@@ -3,7 +3,6 @@ package client
 import (
 	"bufio"
 	"fmt"
-	"github.com/Khasmag06/gophkeeper/internal/models"
 	"os"
 )
 
@@ -49,8 +48,7 @@ func (c *client) Run() error {
 			return err
 		}
 	case loginCredsPath:
-		var record []*models.LoginCredentials
-		if err := c.GetRecords(loginCredsPath, record); err != nil {
+		if err := c.GetRecords(loginCredsPath); err != nil {
 			return err
 		}
 	case addTextDataPath:
@@ -58,8 +56,7 @@ func (c *client) Run() error {
 			return err
 		}
 	case textDataPath:
-		var record []*models.TextData
-		if err := c.GetRecords(textDataPath, record); err != nil {
+		if err := c.GetRecords(textDataPath); err != nil {
 			return err
 		}
 
@@ -68,8 +65,7 @@ func (c *client) Run() error {
 			return err
 		}
 	case binaryDataPath:
-		var record []*models.BinaryData
-		if err := c.GetRecords(binaryDataPath, record); err != nil {
+		if err := c.GetRecords(binaryDataPath); err != nil {
 			return err
 		}
 
@@ -78,11 +74,11 @@ func (c *client) Run() error {
 			return err
 		}
 	case bankCardPath:
-		var record []*models.BankCard
-		if err := c.GetRecords(bankCardPath, record); err != nil {
+		if err := c.GetRecords(bankCardPath); err != nil {
 			return err
 		}
-
+	default:
+		fmt.Println("404 page not found")
 	}
 	return nil
 }

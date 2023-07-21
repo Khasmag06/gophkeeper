@@ -88,7 +88,7 @@ func (c *client) AddRecord(path string) error {
 	}
 	requestBody := bytes.NewBuffer(reqRecordBytes)
 
-	req, err := http.NewRequest("POST", url, requestBody)
+	req, err := http.NewRequest(http.MethodPost, url, requestBody)
 	if err != nil {
 		return err
 	}
@@ -105,10 +105,10 @@ func (c *client) AddRecord(path string) error {
 	return nil
 }
 
-func (c *client) GetRecords(path string, records any) error {
+func (c *client) GetRecords(path string) error {
 	url := fmt.Sprintf("%s%s", c.serverAddress, path)
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
@@ -120,15 +120,15 @@ func (c *client) GetRecords(path string, records any) error {
 	}
 
 	body, err := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println(string(body))
+		return nil
+	}
+
 	var successResp SuccessResponse
 	err = json.Unmarshal(body, &successResp)
 	if err != nil {
 		return err
-	}
-
-	if successResp.Status == "error" {
-		fmt.Println(string(body))
-		return nil
 	}
 
 	decryptedRecords, err := c.decoder.Decrypt(successResp.Data)
@@ -136,11 +136,11 @@ func (c *client) GetRecords(path string, records any) error {
 		return fmt.Errorf("error to decrypt body: %w", err)
 	}
 
-	err = json.Unmarshal(decryptedRecords, &records)
-	if err != nil {
+	var recordsJSON bytes.Buffer
+	if err := json.Indent(&recordsJSON, decryptedRecords, "", "  "); err != nil {
 		return err
 	}
-	fmt.Println(records)
+	fmt.Println(string(recordsJSON.Bytes()))
 
 	defer resp.Body.Close()
 	return nil
